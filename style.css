@@ -1,0 +1,268 @@
+/* ========================================
+   Elliot Wahl – Portfolio
+   Statisk HTML/CSS, hostad på Netlify
+   ======================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #ededed;
+  --vit: #ffffff;
+  --svart: #000000;
+  --grå: #888888;
+  --font: 'Source Code Pro', 'Courier New', monospace;
+  --maxbredd: 680px;
+  --radavst: 1.7;
+  --sektion-mellanrum: 3rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--svart);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: var(--radavst);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ----------------------------------------
+   Wrapper
+   ---------------------------------------- */
+
+.container {
+  max-width: var(--maxbredd);
+  margin: 0 auto;
+  background: var(--vit);
+  padding: 3rem 2.5rem 4rem;
+  min-height: 100vh;
+}
+
+/* ----------------------------------------
+   Header
+   ---------------------------------------- */
+
+header {
+  text-align: center;
+  padding-bottom: var(--sektion-mellanrum);
+  border-bottom: 1px solid var(--bg);
+}
+
+.profilbild {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 1.5rem;
+  /* Fallback om bilden saknas */
+  background: var(--bg);
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.2rem;
+}
+
+.titel {
+  color: var(--grå);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ----------------------------------------
+   Navigation
+   ---------------------------------------- */
+
+.huvud-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2rem 0.8rem;
+}
+
+.huvud-nav a {
+  color: var(--svart);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.15rem 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.huvud-nav a:hover {
+  border-bottom-color: var(--svart);
+}
+
+/* ----------------------------------------
+   Sektioner
+   ---------------------------------------- */
+
+.sektion {
+  padding: var(--sektion-mellanrum) 0;
+  border-bottom: 1px solid var(--bg);
+}
+
+.sektion:last-of-type {
+  border-bottom: none;
+}
+
+h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.2rem;
+}
+
+h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--grå);
+  margin-top: 1.5rem;
+  margin-bottom: 0.6rem;
+}
+
+h3:first-of-type {
+  margin-top: 0;
+}
+
+p {
+  margin-bottom: 1rem;
+  max-width: 56ch;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+/* ----------------------------------------
+   Listor
+   ---------------------------------------- */
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--bg);
+  font-size: 0.95rem;
+}
+
+ul li:last-child {
+  border-bottom: none;
+}
+
+/* ----------------------------------------
+   Länkar
+   ---------------------------------------- */
+
+a {
+  color: var(--svart);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: opacity 0.15s;
+}
+
+a:hover {
+  opacity: 0.6;
+}
+
+.notat {
+  color: var(--grå);
+  font-size: 0.8rem;
+}
+
+/* ----------------------------------------
+   Kontaktlista
+   ---------------------------------------- */
+
+.kontakt-lista li {
+  border-bottom: 1px solid var(--bg);
+  padding: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+.kontakt-lista li:last-child {
+  border-bottom: none;
+}
+
+/* ----------------------------------------
+   Knapp
+   ---------------------------------------- */
+
+.knapp {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1.2rem;
+  background: var(--svart);
+  color: var(--vit);
+  text-decoration: none;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  transition: opacity 0.15s;
+}
+
+.knapp:hover {
+  opacity: 0.75;
+  color: var(--vit);
+}
+
+/* ----------------------------------------
+   Footer
+   ---------------------------------------- */
+
+footer {
+  padding-top: 2rem;
+  text-align: center;
+  color: var(--grå);
+  font-size: 0.8rem;
+}
+
+/* ----------------------------------------
+   Responsiv
+   ---------------------------------------- */
+
+@media (max-width: 680px) {
+  .container {
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  body {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  .profilbild {
+    width: 8rem;
+    height: 8rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 1.5rem 1.2rem 2.5rem;
+  }
+
+  .huvud-nav {
+    gap: 0.2rem 0.5rem;
+  }
+}
