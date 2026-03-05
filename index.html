@@ -257,7 +257,6 @@
       font-size: clamp(1.2rem, 2.5vw, 2rem);
       font-style: italic;
       white-space: nowrap;
-      padding: 0 48px;
       color: var(--grey-600);
     }
     .marquee-item .dot {
@@ -741,7 +740,7 @@
   /* ── MARQUEE ──────────────────────────────────────────────────── */
   const marqueeText = SITE.skills.primary
     .concat(SITE.skills.secondary)
-    .join(' <span class="dot"></span> ');
+    .join(' <span class="dot"></span> ') + ' <span class="dot"></span> ';
   document.querySelector('.marquee-strip').innerHTML = `
     <div class="marquee-track">
       <span class="marquee-item">${marqueeText}</span>
