@@ -568,11 +568,32 @@
     @media (max-width: 960px) {
       nav { padding: 18px 24px; }
       .nav-links { display: none; }
-      #hero { grid-template-columns: 1fr; height: auto; min-height: 100svh; }
-      .hero-left { padding: 120px 24px 60px; }
-      .hero-right { position: absolute; inset: 0; z-index: 0; opacity: .25; }
-      .hero-img-overlay { background: linear-gradient(to top, var(--black) 20%, transparent 80%); }
+
+      /* Hero: stapelad — bild överst, text nedanför */
+      #hero {
+        display: flex; flex-direction: column;
+        height: auto; min-height: 100svh;
+      }
+      .hero-right {
+        position: relative; order: -1;
+        width: 100%; height: 46svh;
+        flex-shrink: 0; opacity: 1;
+      }
+      .hero-img { object-position: center 18%; }
+      .hero-img-overlay {
+        background: linear-gradient(to bottom, transparent 60%, var(--black) 100%);
+      }
+      .hero-left {
+        flex: 1;
+        padding: 20px 24px 48px;
+        justify-content: center;
+        position: relative; z-index: 2;
+      }
+      .hero-name { font-size: clamp(3rem, 16vw, 4.5rem); margin-bottom: 16px; }
+      .hero-sub { margin-bottom: 32px; }
+      .hero-eyebrow { display: none; }
       .scroll-indicator { display: none; }
+
       .section-padding { padding: 80px 24px; }
       .about-grid { grid-template-columns: 1fr; gap: 48px; }
       .inv-grid { grid-template-columns: 1fr; }
@@ -582,7 +603,7 @@
       .krim-source { display: none; }
       .contact-links { flex-direction: column; align-items: center; }
       .published-label { padding: 0 24px; }
-footer { padding: 22px 24px; flex-direction: column; gap: 8px; text-align: center; }
+      footer { padding: 22px 24px; flex-direction: column; gap: 8px; text-align: center; }
     }
     @media (max-width: 540px) {
       .tools-grid { grid-template-columns: 1fr; }
@@ -717,7 +738,7 @@ footer { padding: 22px 24px; flex-direction: column; gap: 8px; text-align: cente
     <div class="section-padding">
       <div class="section-inner">
         <div class="section-label rv">Granskningar</div>
-        <h2 class="section-title rv d1">Notable<br><em>Investigations</em></h2>
+        <h2 class="section-title rv d1">Uppmärksammade<br><em>granskningar</em></h2>
       </div>
     </div>
     <div class="inv-grid">
