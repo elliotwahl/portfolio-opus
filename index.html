@@ -305,18 +305,18 @@
        PUBLISHED IN
        ══════════════════════════════════════════════ */
     .published-strip {
-      border-top: 1px solid var(--grey-800);
-      border-bottom: 1px solid var(--grey-800);
+      border-top: 1px solid var(--grey-600);
+      border-bottom: 1px solid var(--grey-600);
       display: flex; align-items: center;
-      padding: 20px 0;
+      padding: 24px 0;
     }
     .published-label {
       font-family: var(--f-mono);
-      font-size: .55rem; letter-spacing: .3em;
-      text-transform: uppercase; color: var(--grey-600);
+      font-size: .7rem; letter-spacing: .3em;
+      text-transform: uppercase; color: var(--white);
       white-space: nowrap; flex-shrink: 0;
       padding: 0 40px;
-      border-right: 1px solid var(--grey-800);
+      border-right: 1px solid var(--grey-600);
     }
     .published-marquee {
       overflow: hidden; flex: 1;
@@ -327,13 +327,14 @@
     }
     .published-track span {
       font-family: var(--f-serif);
-      font-size: clamp(.95rem, 1.6vw, 1.4rem);
-      font-style: italic; color: var(--grey-400);
+      font-size: clamp(1.05rem, 1.8vw, 1.6rem);
+      font-style: italic; color: var(--grey-200);
       white-space: nowrap; padding: 4px 0;
     }
     .published-track .sep {
-      font-family: var(--f-mono); font-size: .7rem;
-      color: var(--grey-800); padding: 0 24px;
+      font-family: var(--f-serif); font-size: 1em;
+      font-style: italic; color: var(--grey-600);
+      padding: 0 20px; vertical-align: baseline;
     }
 
     /* ══════════════════════════════════════════════
@@ -504,7 +505,7 @@
       font-family: var(--f-serif);
       font-size: clamp(3.5rem, 10vw, 12rem);
       font-weight: 400; font-style: italic;
-      line-height: .88; letter-spacing: -.03em; margin-bottom: 20px;
+      line-height: .88; letter-spacing: -.03em; margin-bottom: 48px;
     }
     .contact-sub {
       font-family: var(--f-mono); font-size: .65rem;
@@ -666,7 +667,7 @@
     <a href="#" class="nav-logo">${SITE.name}</a>
     <ul class="nav-links">
       <li><a href="#about">Om mig</a></li>
-      <li><a href="#investigations">Artiklar</a></li>
+      <li><a href="#investigations">Arbeten</a></li>
       <li><a href="#projects">Projekt</a></li>
       <li><a href="#contact">Kontakt</a></li>
     </ul>`;
@@ -674,7 +675,6 @@
   /* ── HERO ─────────────────────────────────────────────────────── */
   document.getElementById('hero').innerHTML = `
     <div class="hero-left">
-      <p class="hero-eyebrow">${SITE.location} &middot; ${SITE.status}</p>
       <h1 class="hero-name" aria-label="${SITE.name}">
         ${SITE.name.split(' ').map(w => `<span>${w}</span>`).join('')}
       </h1>
@@ -688,10 +688,7 @@
       <img src="profil_high.jpg" alt="${SITE.name}" class="hero-img" loading="eager">
       <div class="hero-img-overlay"></div>
     </div>
-    <div class="scroll-indicator">
-      <div class="scroll-line"></div>
-      <span class="scroll-text">Scroll</span>
-    </div>`;
+`;
 
   /* ── MARQUEE ──────────────────────────────────────────────────── */
   const marqueeText = SITE.skills.primary
@@ -768,7 +765,7 @@
   const p = SITE.project;
   document.querySelector('#projects .section-inner').innerHTML = `
     <div class="section-label rv">Projekt</div>
-    <h2 class="section-title rv d1">Verktyg &amp;<br>ekosystem</h2>
+    <h2 class="section-title rv d1">Verktyg och<br>projekt</h2>
     <div class="project-feature rv d2">
       <div class="proj-badge">${p.badge}</div>
       <h3 class="proj-title">${p.title}</h3>
@@ -801,7 +798,6 @@
     </a>`).join('');
   document.querySelector('#contact .section-inner').innerHTML = `
     <div class="contact-block rv">
-      <div class="section-label" style="justify-content:center;">Kontakt</div>
       <h2 class="contact-title">Låt oss<br>prata</h2>
       <p class="contact-sub">${c.intro}</p>
       <div class="contact-links">${linkHTML}</div>

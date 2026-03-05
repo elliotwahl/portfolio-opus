@@ -1,23 +1,22 @@
 const SITE = {
 
   /* ── Personinfo ──────────────────────────────────────────────── */
-  name:     "Elliot Wahl",
-  location: "Stockholm, Sverige",
-  status:   "Tillgänglig för uppdrag",
-  roles:    ["Journalist", "Kriminalreporter"],
+  name:  "Elliot Wahl",
+  roles: ["Grävande journalist & kriminalreporter"],
 
   /* ── Om-sektionen ────────────────────────────────────────────── */
   about: {
     title: ["Undersöker", "sanningen"],
     paragraphs: [
-      "Nyligen examinerad journalist med ett starkt engagemang för <strong>undersökande journalistik</strong> och kriminalrapportering — driven av övertygelsen att transparens och källskydd är journalistikens ryggrad.",
-      "Specialiserad på brott med förgreningar i <strong>gängrelaterade mord</strong>, diplomatisk brottslighet, kryptovalutatransaktioner och väpnade incidenter.",
+      "Journalist med ett starkt engagemang för <strong>undersökande journalistik</strong> och kriminalfall.",
+      "Specialiserad på brott med förgreningar i <strong>nätverkskriminalitet</strong> och brott på internet. Har tidigare kartlagt fotbollssupportrar, granskat socialtjänsten och avslöjat försäljning av polisens arbetskläder.",
+      "Har bred kompetens inom djupdykande research, bland annat med hjälp av OSINT- och AI-verktyg.",
+      "Har du ett tips eller vill du av någon annan anledning komma i kontakt med mig? Mina kontaktuppgifter finner du längst ned."
     ],
     facts: [
-      { label: "Position",   value: "Nyhetsbyrån Siren" },
-      { label: "Tidigare",   value: "SVT Snabbgranskning — Faktakoll & undersökande redaktion" },
-      { label: "Specialitet",value: "Kriminalrapportering · Offentlighetsprincipen · FOIA" },
-      { label: "Status",     value: "Söker nya möjligheter och uppdrag" },
+      { label: "Nuvarande arbetsplats",   value: "Nyhetsbyrån Siren" },
+      { label: "Tidigare",   value: "SVT Snabbgranskning" },
+      { label: "Särskild kompetens",value: "Kriminalrapportering · Offentlighetsprincipen · Juridik" },
     ],
   },
 
@@ -106,36 +105,32 @@ const SITE = {
     desc:  "Ett ekosystem byggt kring offentlighetsprincipen: informationsportal, dokumentbibliotek, gratis juridisk rådgivning och specialiserade journalistverktyg. Designat för att demokratisera tillgången till allmänna handlingar.",
     tools: [
       { name: "fupp.se",                url: "https://fupp.se",                                      desc: "Portal om offentlighetsprincipen" },
-      { name: "handlingar.fupp.se",     url: "https://handlingar.fupp.se",                           desc: "Dokumentbibliotek för allmänna handlingar" },
-      { name: "fraga.fupp.se",          url: "https://fraga.fupp.se",                                desc: "Gratis juridisk FOIA-rådgivning" },
-      { name: "lexikon.fupp.se",        url: "https://lexikon.fupp.se",                              desc: "Terminologilexikon för journalister" },
-      { name: "Ålderskalkylatorn",      url: "https://fupp.se/verktyg/alderskalkylatorn",            desc: "Ålder från personnummer vid händelse" },
-      { name: "Häktningskalkylatorn",   url: "https://fupp.se/verktyg/haktningskalkylatorn",         desc: "Juridisk tidslinje för häktning" },
-      { name: "Offentlighetsregistret", url: "https://fupp.se/verktyg/offentlighetsregistret",       desc: "Register över allmänna handlingar" },
-      { name: "Fler verktyg →",         url: "https://fupp.se/verktyg",                              desc: "FOIA-generator, riksdagsbevakning m.m." },
-      { name: "Fotoportfolio",          url: "https://galleri.elliotwahl.se",                        desc: "galleri.elliotwahl.se" },
+      { name: "Ålderskalkylatorn",      url: "https://liot.se/alder",            desc: "Ålder från personnummer – direkt i webbläsaren" },
+      { name: "Offentlighetsregistret", url: "https://register.liot.se",       desc: "Register över kontaktvägar för allmänna handlingar" },
+      { name: "Flashback Scraper",      url: "https://liot.se/fbscraper",                              desc: "Skrapa allt innehåll i en Flashback-tråd" },
+      { name: "Våldsdådskollen",        url: "https://valdsdadskollen.liot.se",                        desc: "Bevaka polisiära händelser kopplat till nätverkskriminalitet" },
     ],
   },
 
   /* ── Kompetenser ─────────────────────────────────────────────── */
   skills: {
-    primary:   ["Undersökande journalistik", "Kriminalrapportering", "Offentlighetsprincipen", "Källskydd"],
-    secondary: ["FOIA Research", "Data Journalism", "Faktakoll", "Webbutveckling", "Krypterad kommunikation", "Dokumentanalys", "Rättsbevakning"],
+    primary:   ["Undersökande journalistik", "Kriminalrapportering", "Offentlighetsprincipen", "Juridik"],
+    secondary: [ "Research", "Datajournalistik", "Artificiell Intelligens", "Webbutveckling", "Krypterad kommunikation", "Dokumentanalys", "Rättsbevakning"],
   },
 
   /* ── Kontaktlänkar ───────────────────────────────────────────── */
   contact: {
-    intro: "Tillgänglig för uppdrag, samarbeten och tips via krypterad kanal",
+    intro: "Använd Signal för krypterad kommunikation.",
     links: [
       {
-        label:   "elliot@elliotwahl.se",
-        url:     "mailto:elliot@elliotwahl.se",
+        label:   "hej@elliotwahl.se",
+        url:     "mailto:hej@elliotwahl.se",
         primary: true,
         icon:    "mail",
       },
       {
         label:   "Signal — Krypterat",
-        url:     "https://signal.me/#eu/kj1YsqTADIEGeaxhgAJEEa2eDReJ-9NF3EyS-MOv-Fb2RtfM4ItCRq_EA_zDIrOC",
+        url:     "https://liot.se/signal",
         primary: false,
         icon:    "shield",
       },
@@ -150,12 +145,6 @@ const SITE = {
         url:     "https://linkedin.com/in/elliotwahl",
         primary: false,
         icon:    "linkedin",
-      },
-      {
-        label:   "Fotoportfolio",
-        url:     "https://galleri.elliotwahl.se",
-        primary: false,
-        icon:    "photo",
       },
     ],
   },
