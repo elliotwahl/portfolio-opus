@@ -426,6 +426,13 @@
       letter-spacing: .2em; text-transform: uppercase;
       color: var(--grey-400);
       padding-top: 16px; border-top: 1px solid var(--grey-800);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .card-featured {
+      font-family: var(--f-mono); font-size: .5rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--grey-400);
+      white-space: nowrap;
     }
 
     /* ══════════════════════════════════════════════
@@ -785,7 +792,10 @@
           <span class="card-num">0${i + 1}</span>
           <h3 class="card-title">${a.title}</h3>
           <p class="card-desc">${a.desc}</p>
-          <span class="card-tag">${a.source}</span>
+          <span class="card-tag">
+            <span>${a.source}</span>
+            ${a.featured ? `<span class="card-featured">${a.featured}</span>` : ''}
+          </span>
         </a>`).join('')}
     </div>
     <div class="section-padding krim-section">

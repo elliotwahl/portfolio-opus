@@ -47,10 +47,11 @@ const SITE = {
       source: "SVT Snabbgranskning",
     },
     {
-      url:    "https://www.svt.se/nyheter/granskning/aklagare-rojde-kevins-hemliga-adress",
-      title:  "Åklagare röjde Kevins hemliga adress",
-      desc:   "Undersökte och avslöjade en åklagare som röjde en skyddad persons hemliga adress — en granskning som berör rättsväsendets ansvar för brottsoffer.",
-      source: "SVT Snabbgranskning",
+      url:      "https://www.svt.se/nyheter/granskning/aklagare-rojde-kevins-hemliga-adress",
+      title:    "Åklagare röjde Kevins hemliga adress",
+      desc:     "Undersökte och avslöjade en åklagare som röjde en skyddad persons hemliga adress — en granskning som berör rättsväsendets ansvar för brottsoffer.",
+      source:   "SVT Snabbgranskning",
+      featured: "#1 mest läst på SVT Nyheter",
     },
     {
       url:    "https://www.svt.se/sport/fotboll/de-ar-portade-fran-allsvenskan-svt-har-kartlagt-personerna-med-tilltradesforbud",
@@ -59,10 +60,11 @@ const SITE = {
       source: "SVT Snabbgranskning",
     },
     {
-      url:    "https://www.svt.se/nyheter/granskning/socialtjansten-hamtade-stina-efter-sex-ar-i-samma-familjehem",
-      title:  "Socialtjänsten hämtade Stina — efter sex år i samma familjehem",
-      desc:   "Djupgående granskning av socialvårdsärenden och barnavårdssystemets brister — journalistik som sätter de mest utsatta i centrum.",
-      source: "SVT Snabbgranskning",
+      url:      "https://www.svt.se/nyheter/granskning/socialtjansten-hamtade-stina-efter-sex-ar-i-samma-familjehem",
+      title:    "Socialtjänsten hämtade Stina — efter sex år i samma familjehem",
+      desc:     "Djupgående granskning av socialvårdsärenden och barnavårdssystemets brister — journalistik som sätter de mest utsatta i centrum.",
+      source:   "SVT Snabbgranskning",
+      featured: "#1 mest läst på SVT Nyheter",
     },
   ],
 
