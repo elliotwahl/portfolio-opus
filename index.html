@@ -8,538 +8,741 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ─── Design tokens ──────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       DESIGN TOKENS
+       ══════════════════════════════════════════════ */
     :root {
-      --bg:           #06060d;
-      --bg2:          #09091a;
-      --surface:      rgba(255,255,255,0.038);
-      --surface-h:    rgba(255,255,255,0.068);
-      --border:       rgba(255,255,255,0.072);
-      --border-h:     rgba(255,255,255,0.16);
-      --text:         #f0ece4;
-      --muted:        #7a7688;
-      --dim:          #3d3b4a;
-      --gold:         #c8a050;
-      --gold-glow:    rgba(200,160,80,0.18);
-      --gold-dim:     rgba(200,160,80,0.55);
-      --blue-orb:     rgba(80,110,200,0.07);
-      --f-display:    'Cormorant Garamond', Georgia, serif;
-      --f-ui:         'Syne', sans-serif;
-      --f-mono:       'JetBrains Mono', monospace;
-      --blur:         blur(22px) saturate(160%);
-      --blur-h:       blur(40px) saturate(180%);
-      --r-card:       20px;
-      --r-pill:       100px;
+      --black: #000000;
+      --white: #ffffff;
+      --off-white: #f5f5f5;
+      --grey-100: #e8e8e8;
+      --grey-200: #d0d0d0;
+      --grey-400: #888888;
+      --grey-600: #555555;
+      --grey-800: #222222;
+      --grey-900: #111111;
+      --f-serif: 'Instrument Serif', Georgia, serif;
+      --f-sans: 'Space Grotesk', -apple-system, sans-serif;
+      --f-mono: 'Space Mono', monospace;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    /* ─── Reset ──────────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       RESET
+       ══════════════════════════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--f-ui);
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--f-sans);
       overflow-x: hidden;
-      cursor: none;
       -webkit-font-smoothing: antialiased;
+      cursor: none;
     }
+    ::selection { background: var(--white); color: var(--black); }
 
-    /* ─── Custom cursor ──────────────────────────────────────────── */
-    #cur, #cur-ring {
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9999;
-      transform: translate(-50%, -50%);
+    /* ══════════════════════════════════════════════
+       CUSTOM CURSOR
+       ══════════════════════════════════════════════ */
+    #cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 12px; height: 12px;
+      background: var(--white);
       border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: width .3s var(--ease-out-expo), height .3s var(--ease-out-expo),
+                  background .2s, mix-blend-mode .2s;
+      mix-blend-mode: difference;
     }
-    #cur {
-      width: 7px; height: 7px;
-      background: var(--gold);
-      transition: width .25s, height .25s, background .25s;
-      z-index: 9999;
-    }
-    #cur-ring {
-      width: 34px; height: 34px;
-      border: 1px solid rgba(200,160,80,.38);
-      transition: width .3s, height .3s, border-color .3s;
-      z-index: 9998;
-    }
-    body.ptr #cur { width: 11px; height: 11px; background: #fff; }
-    body.ptr #cur-ring { width: 52px; height: 52px; border-color: rgba(255,255,255,.2); }
-
-    /* ─── Ambient background ─────────────────────────────────────── */
-    .bg-layer {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 65% 55% at 8%  12%, rgba(40,25,100,.32) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 60% at 92% 88%, rgba(90,45,10,.22)  0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 52% 50%, rgba(20,15,60,.15)  0%, transparent 100%),
-        var(--bg);
+    #cursor.expand {
+      width: 60px; height: 60px;
     }
 
-    /* film-grain overlay */
+    /* ══════════════════════════════════════════════
+       NOISE OVERLAY
+       ══════════════════════════════════════════════ */
     body::after {
       content: '';
-      position: fixed; inset: 0; z-index: 998; pointer-events: none;
-      opacity: .028;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 120px 120px;
+      position: fixed; inset: 0; z-index: 9998;
+      pointer-events: none;
+      opacity: .035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
     }
 
-    /* ─── Glass helpers ──────────────────────────────────────────── */
-    .glass {
-      background: var(--surface);
-      backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
-      border: 1px solid var(--border);
-      box-shadow: 0 8px 32px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.055);
-    }
-    .glass-h {
-      background: rgba(255,255,255,.052);
-      backdrop-filter: var(--blur-h);
-      -webkit-backdrop-filter: var(--blur-h);
-      border: 1px solid rgba(255,255,255,.1);
-      box-shadow: 0 20px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.1), inset 0 -1px 0 rgba(0,0,0,.15);
-    }
-
-    /* ─── Nav ────────────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       NAV
+       ══════════════════════════════════════════════ */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 18px 48px;
+      padding: 24px 48px;
       display: flex; align-items: center; justify-content: space-between;
-    }
-    nav::before {
-      content: '';
-      position: absolute; inset: 0; z-index: -1;
-      background: rgba(6,6,13,.62);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(255,255,255,.05);
-      mask: linear-gradient(to bottom, #000 0%, #000 75%, transparent 100%);
-      -webkit-mask: linear-gradient(to bottom, #000 0%, #000 75%, transparent 100%);
+      mix-blend-mode: difference;
     }
     .nav-logo {
-      font-family: var(--f-display);
-      font-size: 1.3rem; font-weight: 500;
-      color: var(--text); text-decoration: none;
-      letter-spacing: .02em;
-    }
-    .nav-logo em { color: var(--gold); font-style: normal; }
-    .nav-links { display: flex; gap: 36px; list-style: none; }
-    .nav-links a {
-      font-size: .68rem; font-weight: 600;
-      letter-spacing: .18em; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      transition: color .2s;
-    }
-    .nav-links a:hover { color: var(--text); }
-
-    /* ─── Section utilities ──────────────────────────────────────── */
-    section { position: relative; z-index: 1; }
-
-    .label {
       font-family: var(--f-mono);
-      font-size: .62rem; letter-spacing: .24em; text-transform: uppercase;
-      color: var(--gold);
-      display: flex; align-items: center; gap: 14px;
-      margin-bottom: 14px;
+      font-size: .8rem; font-weight: 700;
+      color: var(--white); text-decoration: none;
+      letter-spacing: .15em; text-transform: uppercase;
     }
-    .label::before { content: ''; display: block; width: 22px; height: 1px; background: var(--gold); }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      font-family: var(--f-mono);
+      font-size: .65rem; font-weight: 400;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--white); text-decoration: none;
+      position: relative; padding-bottom: 2px;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--white);
+      transition: width .4s var(--ease-out-expo);
+    }
+    .nav-links a:hover::after { width: 100%; }
 
-    .sec-title {
-      font-family: var(--f-display);
-      font-size: clamp(3rem, 6vw, 7rem);
-      font-weight: 300; line-height: .98;
-      letter-spacing: -.015em;
-      margin-bottom: 28px;
+    /* ══════════════════════════════════════════════
+       HERO
+       ══════════════════════════════════════════════ */
+    #hero {
+      position: relative;
+      height: 100svh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
     }
-    .sec-title em { font-style: italic; }
+
+    .hero-left {
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 80px;
+      position: relative; z-index: 2;
+    }
+
+    .hero-right {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(1.15);
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+    .hero-img.loaded { transform: scale(1); }
+
+    .hero-img-overlay {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to right, var(--black) 0%, transparent 40%);
+    }
+
+    .hero-eyebrow {
+      font-family: var(--f-mono);
+      font-size: .6rem; letter-spacing: .35em;
+      color: var(--grey-400); text-transform: uppercase;
+      margin-bottom: 24px;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .8s var(--ease-out-expo) .4s forwards;
+    }
+
+    .hero-name {
+      font-family: var(--f-serif);
+      font-size: clamp(5rem, 12vw, 12rem);
+      font-weight: 400; font-style: italic;
+      line-height: .85; letter-spacing: -.04em;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .hero-name span {
+      display: block;
+      transform: translateY(115%);
+      animation: slideUp 1.2s var(--ease-out-expo) forwards;
+    }
+    .hero-name span:nth-child(2) { animation-delay: .15s; }
+
+    .hero-sub {
+      font-family: var(--f-mono);
+      font-size: .65rem; letter-spacing: .3em;
+      text-transform: uppercase; color: var(--grey-400);
+      margin-bottom: 48px;
+      opacity: 0; animation: fadeUp .8s var(--ease-out-expo) .7s forwards;
+    }
+
+    .hero-ctas {
+      display: flex; gap: 16px;
+      opacity: 0; animation: fadeUp .8s var(--ease-out-expo) .9s forwards;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 32px;
+      font-family: var(--f-mono); font-size: .65rem;
+      font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+      text-decoration: none; transition: all .4s var(--ease-out-expo);
+      position: relative; overflow: hidden;
+    }
+    .btn-primary {
+      background: var(--white); color: var(--black);
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 60px rgba(255,255,255,.15);
+    }
+    .btn-outline {
+      background: transparent; color: var(--white);
+      border: 1px solid var(--grey-600);
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .scroll-indicator {
+      position: absolute; bottom: 48px; left: 48px; z-index: 2;
+      display: flex; align-items: center; gap: 12px;
+      opacity: 0; animation: fadeUp 1s var(--ease-out-expo) 1.5s forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--white), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    .scroll-text {
+      font-family: var(--f-mono); font-size: .55rem;
+      letter-spacing: .25em; text-transform: uppercase;
+      color: var(--grey-400);
+      writing-mode: vertical-rl;
+    }
+
+    /* ══════════════════════════════════════════════
+       MARQUEE
+       ══════════════════════════════════════════════ */
+    .marquee-strip {
+      padding: 20px 0;
+      border-top: 1px solid var(--grey-800);
+      border-bottom: 1px solid var(--grey-800);
+      overflow: hidden;
+      position: relative; z-index: 1;
+    }
+    .marquee-track {
+      display: flex;
+      animation: marquee 30s linear infinite;
+      width: max-content;
+    }
+    .marquee-item {
+      font-family: var(--f-serif);
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      font-style: italic;
+      white-space: nowrap;
+      padding: 0 48px;
+      color: var(--grey-600);
+    }
+    .marquee-item .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--white);
+      border-radius: 50%;
+      margin: 0 32px;
+      vertical-align: middle;
+    }
+
+    /* ══════════════════════════════════════════════
+       SECTION LAYOUT
+       ══════════════════════════════════════════════ */
+    section { position: relative; z-index: 1; }
+    .section-padding { padding: 140px 48px; }
+    .section-inner { max-width: 1400px; margin: 0 auto; }
+
+    .section-label {
+      font-family: var(--f-mono);
+      font-size: .55rem; letter-spacing: .4em; text-transform: uppercase;
+      color: var(--grey-400);
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: ''; display: block;
+      width: 40px; height: 1px; background: var(--grey-600);
+    }
+
+    .section-title {
+      font-family: var(--f-serif);
+      font-size: clamp(3rem, 7vw, 8rem);
+      font-weight: 400; font-style: italic;
+      line-height: .92; letter-spacing: -.03em;
+      margin-bottom: 32px;
+    }
 
     .divider {
       height: 1px;
-      background: linear-gradient(to right, transparent, var(--border), transparent);
-      max-width: 1440px; margin: 0 auto;
-      position: relative; z-index: 1;
+      background: var(--grey-800);
+      max-width: 1400px; margin: 0 auto;
+    }
+    .divider-full {
+      height: 1px;
+      background: var(--grey-800);
     }
 
-    /* ─── Reveal animation ───────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       REVEAL ANIMATION
+       ══════════════════════════════════════════════ */
     .rv {
-      opacity: 0; transform: translateY(28px);
-      transition: opacity .85s cubic-bezier(.16,1,.3,1), transform .85s cubic-bezier(.16,1,.3,1);
+      opacity: 0; transform: translateY(40px);
+      transition: opacity .9s var(--ease-out-expo), transform .9s var(--ease-out-expo);
     }
     .rv.on { opacity: 1; transform: none; }
     .rv.d1 { transition-delay: .1s; }
     .rv.d2 { transition-delay: .2s; }
     .rv.d3 { transition-delay: .3s; }
     .rv.d4 { transition-delay: .4s; }
+    .rv.d5 { transition-delay: .5s; }
+    .rv.d6 { transition-delay: .6s; }
 
-    /* ─── HERO ───────────────────────────────────────────────────── */
-    #hero {
-      position: relative;
-      min-height: 100svh;
-      display: flex; flex-direction: column;
-      justify-content: flex-end;
-      padding: 0 48px 80px;
-      z-index: 1; overflow: hidden;
-    }
-
-    .hero-ghost {
-      position: absolute; bottom: -.08em; left: -.01em;
-      font-family: var(--f-display);
-      font-size: clamp(22rem, 52vw, 64rem);
-      font-weight: 300; line-height: 1;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(255,255,255,.018);
-      pointer-events: none; user-select: none; z-index: 0;
-      white-space: nowrap; will-change: transform;
-    }
-
-    .hero-eyebrow {
-      font-family: var(--f-mono);
-      font-size: .68rem; letter-spacing: .22em;
-      color: var(--gold); text-transform: uppercase;
-      margin-bottom: 18px; opacity: 0;
-      transition: opacity 1s ease;
-    }
-
-    .hero-name {
-      font-family: var(--f-display);
-      font-size: clamp(5.5rem, 15vw, 17rem);
-      font-weight: 300; line-height: .88;
-      letter-spacing: -.025em;
-      margin-bottom: 22px; overflow: hidden;
-    }
-    .hn-line { display: block; transform: translateY(110%); }
-
-    .hero-sub {
-      font-family: var(--f-ui);
-      font-size: clamp(.72rem, 1.4vw, .95rem);
-      font-weight: 500; letter-spacing: .32em;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 52px; opacity: 0;
-      transition: opacity .9s ease;
-    }
-
-    .hero-ctas { display: flex; gap: 14px; opacity: 0; transition: opacity .8s ease; }
-
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 13px 28px; border-radius: var(--r-pill);
-      font-family: var(--f-ui); font-size: .7rem;
-      font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
-      text-decoration: none; transition: all .3s ease;
-    }
-    .btn-gold {
-      background: var(--gold); color: #06060d;
-      box-shadow: 0 0 36px var(--gold-glow), 0 4px 14px rgba(0,0,0,.4);
-    }
-    .btn-gold:hover {
-      background: #d9b266;
-      box-shadow: 0 0 60px rgba(200,160,80,.32), 0 6px 22px rgba(0,0,0,.5);
-      transform: translateY(-1px);
-    }
-    .btn-ghost {
-      background: rgba(255,255,255,.05); color: var(--text);
-      border: 1px solid rgba(255,255,255,.1);
-      backdrop-filter: blur(10px);
-    }
-    .btn-ghost:hover {
-      background: rgba(255,255,255,.1);
-      border-color: rgba(255,255,255,.18);
-      transform: translateY(-1px);
-    }
-
-    .scroll-hint {
-      position: absolute; bottom: 44px; right: 48px;
-      display: flex; align-items: center; gap: 11px;
-      font-family: var(--f-mono); font-size: .6rem;
-      letter-spacing: .16em; color: var(--dim); text-transform: uppercase;
-      opacity: 0; transition: opacity 1s ease;
-    }
-    .scroll-line { width: 36px; height: 1px; background: linear-gradient(to right, transparent, var(--dim)); }
-
-    /* ─── ABOUT ──────────────────────────────────────────────────── */
-    #about { padding: 140px 48px; }
+    /* ══════════════════════════════════════════════
+       ABOUT — SPLIT LAYOUT
+       ══════════════════════════════════════════════ */
     .about-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 88px; align-items: start;
-      max-width: 1440px; margin: 0 auto;
-    }
-    .about-p {
-      font-family: var(--f-display);
-      font-size: clamp(1.1rem, 1.75vw, 1.45rem);
-      font-weight: 300; line-height: 1.68;
-      color: rgba(240,236,228,.82);
-      margin-bottom: 22px;
-    }
-    .about-p strong { color: var(--text); font-weight: 500; }
-
-    .facts { display: flex; flex-direction: column; gap: 14px; }
-    .fact {
-      padding: 22px 26px; border-radius: 16px;
-      transition: background .35s, border-color .35s, transform .35s;
-    }
-    .fact:hover {
-      background: var(--surface-h); border-color: var(--border-h);
-      transform: translateX(5px);
-    }
-    .fact-tag {
-      font-family: var(--f-mono); font-size: .6rem;
-      letter-spacing: .18em; color: var(--gold);
-      text-transform: uppercase; margin-bottom: 7px;
-    }
-    .fact-val {
-      font-family: var(--f-display); font-size: 1.1rem;
-      font-weight: 400; line-height: 1.35; color: var(--text);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 120px;
+      align-items: start;
     }
 
-    /* ─── INVESTIGATIONS ─────────────────────────────────────────── */
-    #investigations { padding: 100px 48px; }
-    .inv-head { max-width: 1440px; margin: 0 auto 56px; }
+    .about-text {
+      font-family: var(--f-serif);
+      font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+      font-weight: 400; line-height: 1.7;
+      color: var(--grey-200);
+      margin-bottom: 20px;
+    }
+    .about-text strong { color: var(--white); font-weight: 400; }
+
+    .facts-list { display: flex; flex-direction: column; gap: 0; }
+    .fact-item {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--grey-800);
+      display: grid; grid-template-columns: 140px 1fr; gap: 24px;
+      align-items: baseline;
+      transition: padding-left .4s var(--ease-out-expo);
+    }
+    .fact-item:first-child { border-top: 1px solid var(--grey-800); }
+    .fact-item:hover { padding-left: 12px; }
+    .fact-label {
+      font-family: var(--f-mono);
+      font-size: .6rem; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--grey-400);
+    }
+    .fact-value {
+      font-family: var(--f-sans);
+      font-size: .95rem; line-height: 1.5; color: var(--white);
+    }
+
+    /* ══════════════════════════════════════════════
+       INVESTIGATIONS — EDITORIAL GRID
+       ══════════════════════════════════════════════ */
     .inv-grid {
-      display: grid; grid-template-columns: repeat(2,1fr);
-      gap: 18px; max-width: 1440px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px;
     }
     .inv-card {
-      padding: 38px; border-radius: var(--r-card);
-      transition: transform .4s cubic-bezier(.16,1,.3,1), background .35s, border-color .35s, box-shadow .4s;
+      padding: 48px;
+      background: var(--grey-900);
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column;
       position: relative; overflow: hidden;
-      text-decoration: none; color: inherit; display: block;
+      transition: background .4s;
     }
     .inv-card::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(200,160,80,.045) 0%, transparent 60%);
-      opacity: 0; transition: opacity .4s;
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: var(--white);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .6s var(--ease-out-expo);
     }
-    .inv-card:hover {
-      background: rgba(255,255,255,.062); border-color: rgba(255,255,255,.13);
-      transform: translateY(-5px);
-      box-shadow: 0 28px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(200,160,80,.1),
-                  inset 0 1px 0 rgba(255,255,255,.11);
-    }
-    .inv-card:hover::before { opacity: 1; }
+    .inv-card:hover { background: var(--grey-800); }
+    .inv-card:hover::before { transform: scaleX(1); }
 
     .card-num {
-      font-family: var(--f-mono); font-size: .6rem;
-      letter-spacing: .2em; color: var(--gold);
-      margin-bottom: 22px; display: block;
+      font-family: var(--f-serif);
+      font-size: 4rem; font-style: italic;
+      color: var(--grey-800);
+      line-height: 1; margin-bottom: 24px;
+      transition: color .4s;
     }
+    .inv-card:hover .card-num { color: var(--white); }
+
     .card-title {
-      font-family: var(--f-display);
-      font-size: clamp(1.45rem, 2.4vw, 2.1rem);
-      font-weight: 400; line-height: 1.12;
-      margin-bottom: 14px; color: var(--text);
+      font-family: var(--f-serif);
+      font-size: clamp(1.4rem, 2.2vw, 2rem);
+      font-weight: 400; font-style: italic;
+      line-height: 1.15; margin-bottom: 16px;
+      color: var(--white);
     }
     .card-desc {
-      font-size: .84rem; line-height: 1.72;
-      color: var(--muted); font-weight: 400;
+      font-size: .82rem; line-height: 1.7;
+      color: var(--grey-400); flex-grow: 1;
     }
     .card-tag {
-      display: inline-flex; align-items: center; gap: 6px;
-      margin-top: 22px; padding: 5px 12px; border-radius: var(--r-pill);
-      background: rgba(200,160,80,.08); border: 1px solid rgba(200,160,80,.16);
-      font-family: var(--f-mono); font-size: .58rem;
-      letter-spacing: .12em; color: var(--gold-dim); text-transform: uppercase;
+      margin-top: 28px;
+      font-family: var(--f-mono); font-size: .55rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--grey-400);
+      padding-top: 16px;
+      border-top: 1px solid var(--grey-800);
     }
 
-    /* Kriminaljournalistik links */
-    .krim-grid {
-      display: grid; grid-template-columns: repeat(2,1fr);
-      gap: 10px; max-width: 1440px; margin: 48px auto 0;
-    }
+    /* Krim-items */
+    .krim-section { margin-top: 80px; }
+    .krim-list { margin-top: 32px; }
     .krim-item {
-      padding: 18px 22px; border-radius: 14px;
-      display: flex; align-items: flex-start; gap: 14px;
-      text-decoration: none; color: var(--text);
-      transition: background .3s, border-color .3s, transform .3s;
+      display: flex; align-items: center; gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--grey-800);
+      text-decoration: none; color: var(--white);
+      transition: padding-left .4s var(--ease-out-expo), background .3s;
     }
-    .krim-item:hover {
-      background: var(--surface-h); border-color: var(--border-h);
-      transform: translateY(-2px);
-    }
-    .krim-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--gold); flex-shrink: 0; margin-top: .5em;
-      opacity: .6;
-    }
-    .krim-text { font-size: .82rem; line-height: 1.5; color: var(--muted); }
-    .krim-text strong { color: var(--text); font-weight: 500; display: block; margin-bottom: 3px; }
+    .krim-item:first-child { border-top: 1px solid var(--grey-800); }
+    .krim-item:hover { padding-left: 16px; }
 
-    /* ─── PROJECTS ───────────────────────────────────────────────── */
-    #projects { padding: 100px 48px; }
-    .proj-inner { max-width: 1440px; margin: 0 auto; }
-
-    .arkivet-card {
-      padding: 58px 60px; border-radius: 26px;
-      margin-bottom: 22px; position: relative; overflow: hidden;
+    .krim-arrow {
+      font-family: var(--f-serif);
+      font-size: 1.4rem; font-style: italic;
+      color: var(--grey-600);
+      transition: color .3s, transform .4s var(--ease-out-expo);
+      flex-shrink: 0;
     }
-    .arkivet-card::after {
-      content: 'fupp'; position: absolute;
-      right: -30px; top: 50%; transform: translateY(-50%) rotate(90deg);
-      font-family: var(--f-display); font-size: 13rem; font-weight: 300;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(200,160,80,.036);
-      pointer-events: none; user-select: none; line-height: 1;
+    .krim-item:hover .krim-arrow {
+      color: var(--white);
+      transform: translateX(4px);
+    }
+    .krim-title {
+      font-family: var(--f-sans);
+      font-size: .88rem; font-weight: 500;
+      line-height: 1.4; flex-grow: 1;
+    }
+    .krim-source {
+      font-family: var(--f-mono);
+      font-size: .55rem; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--grey-600);
+      flex-shrink: 0;
     }
 
-    .ark-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 5px 14px; border-radius: var(--r-pill); margin-bottom: 22px;
-      background: rgba(200,160,80,.1); border: 1px solid rgba(200,160,80,.22);
-      font-family: var(--f-mono); font-size: .6rem;
-      letter-spacing: .14em; color: var(--gold); text-transform: uppercase;
+    /* ══════════════════════════════════════════════
+       PROJECTS — FEATURE CARD
+       ══════════════════════════════════════════════ */
+    .project-feature {
+      padding: 80px;
+      border: 1px solid var(--grey-800);
+      position: relative; overflow: hidden;
     }
-    .ark-badge::before {
-      content: ''; width: 6px; height: 6px;
-      background: var(--gold); border-radius: 50%;
-      animation: pulse 2.2s ease-in-out infinite;
+    .project-feature::before {
+      content: 'fupp';
+      position: absolute; right: -40px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--f-serif); font-size: 20rem;
+      font-style: italic; font-weight: 400;
+      color: var(--grey-900); line-height: 1;
+      pointer-events: none; user-select: none;
     }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.75)} }
 
-    .ark-title {
-      font-family: var(--f-display);
-      font-size: clamp(2.6rem, 5.5vw, 5.5rem);
-      font-weight: 300; line-height: 1.02; margin-bottom: 18px;
+    .proj-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 6px 16px;
+      border: 1px solid var(--grey-600);
+      font-family: var(--f-mono); font-size: .55rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--grey-400);
+      margin-bottom: 32px;
     }
-    .ark-desc {
-      font-family: var(--f-display);
-      font-size: clamp(1rem, 1.6vw, 1.28rem);
-      font-weight: 300; line-height: 1.68;
-      color: rgba(240,236,228,.68); max-width: 58ch; margin-bottom: 42px;
+    .proj-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--white); border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .3; transform: scale(.7); }
+    }
+
+    .proj-title {
+      font-family: var(--f-serif);
+      font-size: clamp(3rem, 6vw, 6rem);
+      font-weight: 400; font-style: italic;
+      line-height: .95; margin-bottom: 20px;
+      position: relative;
+    }
+    .proj-desc {
+      font-family: var(--f-serif);
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      font-weight: 400; line-height: 1.7;
+      color: var(--grey-400);
+      max-width: 55ch; margin-bottom: 48px;
+      position: relative;
     }
 
     .tools-grid {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; position: relative;
     }
-    .tool {
-      padding: 15px 18px; border-radius: 13px;
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.058);
-      text-decoration: none; color: inherit; display: block;
-      transition: background .3s, border-color .3s, transform .3s;
+    .tool-item {
+      padding: 20px 24px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--grey-800);
+      text-decoration: none; color: inherit;
+      display: block;
+      transition: background .3s, border-color .3s, transform .3s var(--ease-out-expo);
     }
-    .tool:hover {
-      background: rgba(255,255,255,.062); border-color: rgba(200,160,80,.18);
+    .tool-item:hover {
+      background: rgba(255,255,255,.07);
+      border-color: var(--white);
+      transform: translateY(-3px);
+    }
+    .tool-name {
+      font-family: var(--f-mono); font-size: .7rem;
+      font-weight: 700; color: var(--white);
+      letter-spacing: .04em;
+    }
+    .tool-desc {
+      font-size: .65rem; color: var(--grey-600);
+      margin-top: 6px; line-height: 1.4;
+    }
+
+    /* ══════════════════════════════════════════════
+       SKILLS — STACKED PILLS
+       ══════════════════════════════════════════════ */
+    .skills-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 48px;
+    }
+    .skill-pill {
+      padding: 12px 28px;
+      font-family: var(--f-mono); font-size: .65rem;
+      font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      transition: all .4s var(--ease-out-expo);
+    }
+    .skill-pill.primary {
+      background: var(--white); color: var(--black);
+    }
+    .skill-pill.primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(255,255,255,.15);
+    }
+    .skill-pill.secondary {
+      background: transparent; color: var(--grey-400);
+      border: 1px solid var(--grey-600);
+    }
+    .skill-pill.secondary:hover {
+      border-color: var(--white); color: var(--white);
+      transform: translateY(-3px);
+    }
+
+    /* ══════════════════════════════════════════════
+       CONTACT — DRAMATIC CTA
+       ══════════════════════════════════════════════ */
+    #contact .section-padding { padding-bottom: 160px; }
+    .contact-block { text-align: center; }
+    .contact-title {
+      font-family: var(--f-serif);
+      font-size: clamp(3.5rem, 10vw, 12rem);
+      font-weight: 400; font-style: italic;
+      line-height: .88; letter-spacing: -.03em;
+      margin-bottom: 20px;
+    }
+    .contact-sub {
+      font-family: var(--f-mono);
+      font-size: .65rem; letter-spacing: .25em;
+      text-transform: uppercase; color: var(--grey-400);
+      margin-bottom: 56px;
+    }
+
+    .contact-links {
+      display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;
+    }
+    .c-link {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px;
+      text-decoration: none; font-family: var(--f-mono);
+      font-size: .65rem; font-weight: 400;
+      letter-spacing: .1em;
+      transition: all .4s var(--ease-out-expo);
+    }
+    .c-link svg { width: 14px; height: 14px; opacity: .6; flex-shrink: 0; }
+    .c-link.primary-link {
+      background: var(--white); color: var(--black);
+      border: none;
+    }
+    .c-link.primary-link svg { opacity: .8; }
+    .c-link.primary-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 60px rgba(255,255,255,.12);
+    }
+    .c-link.ghost-link {
+      background: transparent; color: var(--white);
+      border: 1px solid var(--grey-600);
+    }
+    .c-link.ghost-link:hover {
+      border-color: var(--white);
       transform: translateY(-2px);
     }
-    .tool-name { font-family: var(--f-mono); font-size: .68rem; color: var(--text); letter-spacing: .04em; }
-    .tool-desc { font-size: .67rem; color: var(--dim); margin-top: 4px; line-height: 1.4; }
 
-    /* ─── SKILLS ─────────────────────────────────────────────────── */
-    #skills { padding: 100px 48px; }
-    .skills-inner { max-width: 1440px; margin: 0 auto; }
-    .pills { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 42px; }
-    .pill {
-      padding: 11px 22px; border-radius: var(--r-pill);
-      font-size: .78rem; font-weight: 500; letter-spacing: .05em;
-      transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s;
-    }
-    .pill:hover { transform: translateY(-3px) scale(1.02); }
-    .pill.primary {
-      background: rgba(200,160,80,.1); border: 1px solid rgba(200,160,80,.26);
-      color: var(--gold);
-    }
-    .pill.primary:hover { background: rgba(200,160,80,.18); box-shadow: 0 8px 28px rgba(200,160,80,.14); }
-    .pill.secondary {
-      background: var(--surface); border: 1px solid var(--border);
-      color: var(--muted);
-    }
-    .pill.secondary:hover { background: var(--surface-h); border-color: var(--border-h); color: var(--text); }
-
-    /* ─── CONTACT ────────────────────────────────────────────────── */
-    #contact { padding: 100px 48px 150px; }
-    .contact-inner { max-width: 1440px; margin: 0 auto; }
-    .contact-card {
-      padding: 80px; border-radius: 28px;
-      text-align: center; position: relative; overflow: hidden;
-    }
-    .contact-card::before {
-      content: ''; position: absolute;
-      top: -80%; left: 50%; transform: translateX(-50%);
-      width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(200,160,80,.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .contact-title {
-      font-family: var(--f-display);
-      font-size: clamp(2.8rem, 6vw, 7rem);
-      font-weight: 300; line-height: 1.02;
-      margin-bottom: 14px;
-    }
-    .contact-title em { font-style: italic; }
-    .contact-sub {
-      font-size: .82rem; color: var(--muted);
-      letter-spacing: .06em; margin-bottom: 52px;
-    }
-
-    .c-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 11px; }
-    .c-link {
-      display: inline-flex; align-items: center; gap: 9px;
-      padding: 13px 22px; border-radius: var(--r-pill);
-      text-decoration: none; font-size: .76rem; font-weight: 500;
-      letter-spacing: .06em; transition: all .3s ease;
-      background: rgba(255,255,255,.052); border: 1px solid rgba(255,255,255,.082);
-      color: var(--text);
-    }
-    .c-link:hover {
-      background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.15);
-      transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.4);
-    }
-    .c-link svg { width: 15px; height: 15px; opacity: .7; flex-shrink: 0; }
-    .c-link.gold {
-      background: rgba(200,160,80,.1); border-color: rgba(200,160,80,.22);
-      color: var(--gold);
-    }
-    .c-link.gold:hover { background: rgba(200,160,80,.18); box-shadow: 0 8px 28px rgba(200,160,80,.14); }
-
-    /* ─── FOOTER ─────────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       FOOTER
+       ══════════════════════════════════════════════ */
     footer {
       padding: 28px 48px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--grey-800);
       display: flex; align-items: center; justify-content: space-between;
       position: relative; z-index: 1;
     }
-    .f-name { font-family: var(--f-display); font-size: .88rem; color: var(--muted); }
-    .f-copy { font-family: var(--f-mono); font-size: .58rem; letter-spacing: .14em; color: var(--dim); }
+    .f-name {
+      font-family: var(--f-mono); font-size: .7rem;
+      font-weight: 700; letter-spacing: .1em;
+    }
+    .f-copy {
+      font-family: var(--f-mono); font-size: .55rem;
+      letter-spacing: .15em; color: var(--grey-600);
+    }
 
-    /* ─── Responsive ─────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       PUBLISHED IN
+       ══════════════════════════════════════════════ */
+    .published-strip {
+      padding: 32px 48px;
+      border-top: 1px solid var(--grey-800);
+      border-bottom: 1px solid var(--grey-800);
+      display: flex; align-items: center; gap: 40px;
+    }
+    .published-label {
+      font-family: var(--f-mono);
+      font-size: .55rem; letter-spacing: .3em;
+      text-transform: uppercase; color: var(--grey-600);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .published-logos {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 0;
+      overflow: hidden;
+    }
+    .published-logos span {
+      font-family: var(--f-serif);
+      font-size: clamp(.95rem, 1.6vw, 1.4rem);
+      font-style: italic;
+      color: var(--grey-400);
+      white-space: nowrap;
+      padding: 4px 0;
+      transition: color .3s;
+    }
+    .published-logos span:not(.sep):hover { color: var(--white); }
+    .published-logos .sep {
+      font-family: var(--f-mono);
+      font-size: .7rem;
+      color: var(--grey-800);
+      padding: 0 16px;
+    }
     @media (max-width: 960px) {
-      nav { padding: 16px 24px; }
+      .published-strip { flex-direction: column; align-items: flex-start; gap: 16px; padding: 28px 24px; }
+      .published-logos { gap: 0; }
+    }
+
+    /* ══════════════════════════════════════════════
+       WHITE SECTION (INVERT)
+       ══════════════════════════════════════════════ */
+    .section-white {
+      background: var(--white); color: var(--black);
+    }
+    .section-white .section-label { color: var(--grey-600); }
+    .section-white .section-label::before { background: var(--grey-400); }
+    .section-white .section-title { color: var(--black); }
+    .section-white .skill-pill.primary {
+      background: var(--black); color: var(--white);
+    }
+    .section-white .skill-pill.primary:hover {
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+    .section-white .skill-pill.secondary {
+      color: var(--grey-600); border-color: var(--grey-200);
+    }
+    .section-white .skill-pill.secondary:hover {
+      border-color: var(--black); color: var(--black);
+    }
+
+    /* ══════════════════════════════════════════════
+       KEYFRAME ANIMATIONS
+       ══════════════════════════════════════════════ */
+    @keyframes slideUp {
+      from { transform: translateY(115%); }
+      to { transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: .4; }
+      50% { opacity: 1; }
+    }
+
+    /* ══════════════════════════════════════════════
+       RESPONSIVE
+       ══════════════════════════════════════════════ */
+    @media (max-width: 960px) {
+      nav { padding: 18px 24px; }
       .nav-links { display: none; }
-      #hero { padding: 0 24px 56px; }
-      .scroll-hint { display: none; }
-      #about { padding: 80px 24px; }
-      .about-grid { grid-template-columns: 1fr; gap: 40px; }
-      #investigations { padding: 60px 24px; }
+      #hero { grid-template-columns: 1fr; height: auto; min-height: 100svh; }
+      .hero-left { padding: 120px 24px 60px; }
+      .hero-right {
+        position: absolute; inset: 0; z-index: 0;
+        opacity: .25;
+      }
+      .hero-img-overlay {
+        background: linear-gradient(to top, var(--black) 20%, transparent 80%);
+      }
+      .scroll-indicator { display: none; }
+      .section-padding { padding: 80px 24px; }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
       .inv-grid { grid-template-columns: 1fr; }
-      .krim-grid { grid-template-columns: 1fr; }
-      #projects { padding: 60px 24px; }
-      .arkivet-card { padding: 36px 28px; }
-      .tools-grid { grid-template-columns: repeat(2,1fr); }
-      #skills { padding: 60px 24px; }
-      #contact { padding: 60px 24px 80px; }
-      .contact-card { padding: 48px 24px; }
-      footer { padding: 22px 24px; flex-direction: column; gap: 8px; text-align: center; }
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+      .project-feature { padding: 40px 28px; }
+      .fact-item { grid-template-columns: 1fr; gap: 6px; }
+      .krim-source { display: none; }
+      .contact-links { flex-direction: column; align-items: center; }
+      footer {
+        padding: 22px 24px;
+        flex-direction: column; gap: 8px; text-align: center;
+      }
     }
     @media (max-width: 540px) {
       .tools-grid { grid-template-columns: 1fr; }
       .hero-ctas { flex-direction: column; }
+      .hero-name {
+        font-size: clamp(3.5rem, 18vw, 7rem);
+      }
     }
   </style>
 </head>
 <body>
 
   <!-- Cursor -->
-  <div id="cur"></div>
-  <div id="cur-ring"></div>
+  <div id="cursor"></div>
 
-  <!-- Ambient background -->
-  <div class="bg-layer" aria-hidden="true"></div>
-
-  <!-- ── Nav ──────────────────────────────────────────────────────── -->
+  <!-- ═══ NAV ══════════════════════════════════════════════════════ -->
   <nav>
-    <a href="#" class="nav-logo">E<em>.</em>W</a>
+    <a href="#" class="nav-logo">Elliot Wahl</a>
     <ul class="nav-links">
       <li><a href="#about">Om mig</a></li>
       <li><a href="#investigations">Artiklar</a></li>
@@ -548,350 +751,407 @@
     </ul>
   </nav>
 
-  <!-- ── Hero ─────────────────────────────────────────────────────── -->
+  <!-- ═══ HERO ═════════════════════════════════════════════════════ -->
   <section id="hero">
-    <div class="hero-ghost" aria-hidden="true">EW</div>
+    <div class="hero-left">
+      <p class="hero-eyebrow">Stockholm, Sverige &middot; Tillgänglig för uppdrag</p>
 
-    <p class="hero-eyebrow">Stockholm, Sverige &nbsp;·&nbsp; Tillgänglig för uppdrag</p>
+      <h1 class="hero-name" aria-label="Elliot Wahl">
+        <span>Elliot</span>
+        <span>Wahl</span>
+      </h1>
 
-    <h1 class="hero-name" aria-label="Elliot Wahl">
-      <span class="hn-line">Elliot</span>
-      <span class="hn-line">Wahl</span>
-    </h1>
+      <p class="hero-sub">Journalist &middot; Kriminalreporter</p>
 
-    <p class="hero-sub">Journalist &nbsp;·&nbsp; Kriminalreporter</p>
-
-    <div class="hero-ctas">
-      <a href="#contact" class="btn btn-gold">Kontakta mig</a>
-      <a href="#investigations" class="btn btn-ghost">Se mitt arbete</a>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">Kontakta mig</a>
+        <a href="#investigations" class="btn btn-outline">Se mitt arbete</a>
+      </div>
     </div>
 
-    <div class="scroll-hint" aria-hidden="true">
-      <span class="scroll-line"></span>
-      <span>Scroll</span>
+    <div class="hero-right">
+      <img src="profil_high.jpg" alt="Elliot Wahl" class="hero-img" loading="eager">
+      <div class="hero-img-overlay"></div>
+    </div>
+
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      <span class="scroll-text">Scroll</span>
     </div>
   </section>
 
-  <!-- ── About ─────────────────────────────────────────────────────── -->
+  <!-- ═══ MARQUEE STRIP ════════════════════════════════════════════ -->
+  <div class="marquee-strip" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-item">Undersökande journalistik <span class="dot"></span> Kriminalrapportering <span class="dot"></span> Offentlighetsprincipen <span class="dot"></span> Källskydd <span class="dot"></span> Data Journalism <span class="dot"></span> FOIA Research</span>
+      <span class="marquee-item">Undersökande journalistik <span class="dot"></span> Kriminalrapportering <span class="dot"></span> Offentlighetsprincipen <span class="dot"></span> Källskydd <span class="dot"></span> Data Journalism <span class="dot"></span> FOIA Research</span>
+    </div>
+  </div>
+
+  <!-- ═══ ABOUT ════════════════════════════════════════════════════ -->
   <section id="about">
-    <div class="about-grid">
-      <div>
-        <div class="label rv">Om mig</div>
-        <h2 class="sec-title rv d1">Undersöker<br><em>sanningen</em></h2>
-        <p class="about-p rv d2">
-          Nyligen examinerad journalist med ett starkt engagemang för <strong>undersökande journalistik</strong> och kriminalrapportering — driven av övertygelsen att transparens och källskydd är journalistikens ryggrad.
-        </p>
-        <p class="about-p rv d3">
-          Specialiserad på brott med förgreningar i <strong>gängrelaterade mord</strong>, diplomatisk brottslighet, kryptovalutatransaktioner och väpnade incidenter.
-        </p>
-      </div>
+    <div class="section-padding">
+      <div class="section-inner">
+        <div class="about-grid">
+          <div>
+            <div class="section-label rv">Om mig</div>
+            <h2 class="section-title rv d1">Undersöker<br>sanningen</h2>
+            <p class="about-text rv d2">
+              Nyligen examinerad journalist med ett starkt engagemang för <strong>undersökande journalistik</strong> och kriminalrapportering — driven av övertygelsen att transparens och källskydd är journalistikens ryggrad.
+            </p>
+            <p class="about-text rv d3">
+              Specialiserad på brott med förgreningar i <strong>gängrelaterade mord</strong>, diplomatisk brottslighet, kryptovalutatransaktioner och väpnade incidenter.
+            </p>
+          </div>
 
-      <div class="facts">
-        <div class="fact glass rv">
-          <div class="fact-tag">Nuvarande position</div>
-          <div class="fact-val">Nyhetsbyrån Siren</div>
-        </div>
-        <div class="fact glass rv d1">
-          <div class="fact-tag">Tidigare erfarenhet</div>
-          <div class="fact-val">SVT Snabbgranskning — Faktakoll &amp; undersökande redaktion</div>
-        </div>
-        <div class="fact glass rv d2">
-          <div class="fact-tag">Specialitet</div>
-          <div class="fact-val">Kriminalrapportering · Offentlighetsprincipen · FOIA</div>
-        </div>
-        <div class="fact glass rv d3">
-          <div class="fact-tag">Status</div>
-          <div class="fact-val">Söker nya möjligheter och uppdrag</div>
+          <div class="facts-list rv d2">
+            <div class="fact-item">
+              <div class="fact-label">Position</div>
+              <div class="fact-value">Nyhetsbyrån Siren</div>
+            </div>
+            <div class="fact-item">
+              <div class="fact-label">Tidigare</div>
+              <div class="fact-value">SVT Snabbgranskning — Faktakoll &amp; undersökande redaktion</div>
+            </div>
+            <div class="fact-item">
+              <div class="fact-label">Specialitet</div>
+              <div class="fact-value">Kriminalrapportering &middot; Offentlighetsprincipen &middot; FOIA</div>
+            </div>
+            <div class="fact-item">
+              <div class="fact-label">Status</div>
+              <div class="fact-value">Söker nya möjligheter och uppdrag</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
+  <!-- ═══ PUBLISHED IN ══════════════════════════════════════════════ -->
+  <div class="published-strip rv">
+    <div class="published-label">Publicerad i</div>
+    <div class="published-logos">
+      <span>SVT</span>
+      <span class="sep">/</span>
+      <span>Dagens Nyheter</span>
+      <span class="sep">/</span>
+      <span>Aftonbladet</span>
+      <span class="sep">/</span>
+      <span>Expressen</span>
+      <span class="sep">/</span>
+      <span>Göteborgs-Posten</span>
+      <span class="sep">/</span>
+      <span>Omni</span>
+      <span class="sep">/</span>
+      <span>Nyhetsbyrån Siren</span>
+      <span class="sep">/</span>
+      <span>Borås Tidning</span>
+    </div>
+  </div>
 
-  <!-- ── Investigations ────────────────────────────────────────────── -->
+  <!-- ═══ INVESTIGATIONS ═══════════════════════════════════════════ -->
   <section id="investigations">
-    <div class="inv-head">
-      <div class="label rv">Granskningar</div>
-      <h2 class="sec-title rv d1">Notable<br><em>Investigations</em></h2>
+    <div class="section-padding">
+      <div class="section-inner">
+        <div class="section-label rv">Granskningar</div>
+        <h2 class="section-title rv d1">Notable<br>Investigations</h2>
+      </div>
     </div>
 
-    <div class="inv-grid">
-      <a href="https://www.svt.se/nyheter/granskning/polisens-klader-saljs-pa-sellpy-kan-vara-olagligt" target="_blank" rel="noopener" class="inv-card glass rv">
+    <div class="inv-grid" style="max-width:1400px;margin:0 auto;">
+      <a href="https://www.svt.se/nyheter/granskning/polisens-klader-saljs-pa-sellpy-kan-vara-olagligt" target="_blank" rel="noopener" class="inv-card rv">
         <span class="card-num">01</span>
-        <h3 class="card-title">Poliskläder säljs på Sellpy – kan vara olagligt</h3>
+        <h3 class="card-title">Poliskläder säljs på Sellpy — kan vara olagligt</h3>
         <p class="card-desc">Avslöjade hur polisens tjänsteklädsel hamnade till försäljning på andrahandsmarknaden — ett säkerhetsproblem med potentiell risk för missbruk av uniformer.</p>
         <span class="card-tag">SVT Snabbgranskning</span>
       </a>
 
-      <a href="https://www.svt.se/nyheter/granskning/aklagare-rojde-kevins-hemliga-adress" target="_blank" rel="noopener" class="inv-card glass rv d1">
+      <a href="https://www.svt.se/nyheter/granskning/aklagare-rojde-kevins-hemliga-adress" target="_blank" rel="noopener" class="inv-card rv d1">
         <span class="card-num">02</span>
         <h3 class="card-title">Åklagare röjde Kevins hemliga adress</h3>
         <p class="card-desc">Undersökte och avslöjade en åklagare som röjde en skyddad persons hemliga adress — en granskning som berör rättsväsendets ansvar för brottsoffer.</p>
         <span class="card-tag">SVT Snabbgranskning</span>
       </a>
 
-      <a href="https://www.svt.se/sport/fotboll/de-ar-portade-fran-allsvenskan-svt-har-kartlagt-personerna-med-tilltradesforbud" target="_blank" rel="noopener" class="inv-card glass rv d2">
+      <a href="https://www.svt.se/sport/fotboll/de-ar-portade-fran-allsvenskan-svt-har-kartlagt-personerna-med-tilltradesforbud" target="_blank" rel="noopener" class="inv-card rv d2">
         <span class="card-num">03</span>
         <h3 class="card-title">De är portade från Allsvenskan</h3>
         <p class="card-desc">Kartlade implementeringen av tillträdesförbud i svensk fotboll och granskade systemets tillämpning, rättsliga grunder och de drabbade personerna.</p>
         <span class="card-tag">SVT Snabbgranskning</span>
       </a>
 
-      <a href="https://www.svt.se/nyheter/granskning/socialtjansten-hamtade-stina-efter-sex-ar-i-samma-familjehem" target="_blank" rel="noopener" class="inv-card glass rv d3">
+      <a href="https://www.svt.se/nyheter/granskning/socialtjansten-hamtade-stina-efter-sex-ar-i-samma-familjehem" target="_blank" rel="noopener" class="inv-card rv d3">
         <span class="card-num">04</span>
-        <h3 class="card-title">Socialtjänsten hämtade Stina – efter sex år i samma familjehem</h3>
+        <h3 class="card-title">Socialtjänsten hämtade Stina — efter sex år i samma familjehem</h3>
         <p class="card-desc">Djupgående granskning av socialvårdsärenden och barnavårdssystemets brister — journalistik som sätter de mest utsatta i centrum.</p>
         <span class="card-tag">SVT Snabbgranskning</span>
       </a>
     </div>
 
     <!-- Kriminaljournalistik -->
-    <div style="max-width:1440px;margin:72px auto 0;">
-      <div class="label rv">Kriminaljournalistik</div>
-    </div>
-    <div class="krim-grid">
-      <a href="https://www.svt.se/nyheter/lokalt/uppsala/gangmedlem-misstankt-for-trippelmordet-i-uppsala" target="_blank" rel="noopener" class="krim-item glass rv">
-        <span class="krim-dot"></span>
-        <span class="krim-text"><strong>Gängmedlem misstänkt för trippelmordet i Uppsala</strong>SVT Nyheter</span>
-      </a>
-      <a href="https://www.svt.se/nyheter/inrikes/uppgifter-ytterligare-en-diplomat-misstanks-for-brott-i-separat-utredning" target="_blank" rel="noopener" class="krim-item glass rv d1">
-        <span class="krim-dot"></span>
-        <span class="krim-text"><strong>Ytterligare en diplomat misstänks för brott</strong>SVT Nyheter</span>
-      </a>
-      <a href="https://www.svt.se/nyheter/lokalt/orebro/rickard-andersson-kopte-kryptovaluta-polisen-ber-storbritannien-om-hjalp" target="_blank" rel="noopener" class="krim-item glass rv d2">
-        <span class="krim-dot"></span>
-        <span class="krim-text"><strong>Rickard Andersson köpte kryptovaluta – polisen ber Storbritannien om hjälp</strong>SVT Örebro</span>
-      </a>
-      <a href="https://www.svt.se/nyheter/inrikes/larmen-till-112-i-orebro-skottskadad-tog-skydd-pa-forskola" target="_blank" rel="noopener" class="krim-item glass rv d3">
-        <span class="krim-dot"></span>
-        <span class="krim-text"><strong>Skottskadad tog skydd på förskola i Örebro</strong>SVT Nyheter</span>
-      </a>
-      <a href="https://www.dn.se/sverige/utgav-sig-for-att-vara-benjamin-ingrosso-lurade-kvinna-pa-pengar/" target="_blank" rel="noopener" class="krim-item glass rv">
-        <span class="krim-dot"></span>
-        <span class="krim-text"><strong>Utgav sig för att vara Benjamin Ingrosso – lurade kvinna på pengar</strong>Dagens Nyheter / Nyhetsbyrån Siren</span>
-      </a>
-      <a href="https://www.bt.se/boras/just-nu-borasare-haktas-for-valdtakt-9cefc842/" target="_blank" rel="noopener" class="krim-item glass rv d1">
-        <span class="krim-dot"></span>
-        <span class="krim-text"><strong>Boråsare häktas för våldtäkt</strong>Borås Tidning</span>
-      </a>
+    <div class="section-padding krim-section">
+      <div class="section-inner">
+        <div class="section-label rv">Kriminaljournalistik</div>
+
+        <div class="krim-list">
+          <a href="https://www.svt.se/nyheter/lokalt/uppsala/gangmedlem-misstankt-for-trippelmordet-i-uppsala" target="_blank" rel="noopener" class="krim-item rv">
+            <span class="krim-arrow">&rarr;</span>
+            <span class="krim-title">Gängmedlem misstänkt för trippelmordet i Uppsala</span>
+            <span class="krim-source">SVT Nyheter</span>
+          </a>
+          <a href="https://www.svt.se/nyheter/inrikes/uppgifter-ytterligare-en-diplomat-misstanks-for-brott-i-separat-utredning" target="_blank" rel="noopener" class="krim-item rv d1">
+            <span class="krim-arrow">&rarr;</span>
+            <span class="krim-title">Ytterligare en diplomat misstänks för brott</span>
+            <span class="krim-source">SVT Nyheter</span>
+          </a>
+          <a href="https://www.svt.se/nyheter/lokalt/orebro/rickard-andersson-kopte-kryptovaluta-polisen-ber-storbritannien-om-hjalp" target="_blank" rel="noopener" class="krim-item rv d2">
+            <span class="krim-arrow">&rarr;</span>
+            <span class="krim-title">Rickard Andersson köpte kryptovaluta — polisen ber Storbritannien om hjälp</span>
+            <span class="krim-source">SVT Örebro</span>
+          </a>
+          <a href="https://www.svt.se/nyheter/inrikes/larmen-till-112-i-orebro-skottskadad-tog-skydd-pa-forskola" target="_blank" rel="noopener" class="krim-item rv d3">
+            <span class="krim-arrow">&rarr;</span>
+            <span class="krim-title">Skottskadad tog skydd på förskola i Örebro</span>
+            <span class="krim-source">SVT Nyheter</span>
+          </a>
+          <a href="https://www.dn.se/sverige/utgav-sig-for-att-vara-benjamin-ingrosso-lurade-kvinna-pa-pengar/" target="_blank" rel="noopener" class="krim-item rv d4">
+            <span class="krim-arrow">&rarr;</span>
+            <span class="krim-title">Utgav sig för att vara Benjamin Ingrosso — lurade kvinna på pengar</span>
+            <span class="krim-source">DN / Siren</span>
+          </a>
+          <a href="https://www.bt.se/boras/just-nu-borasare-haktas-for-valdtakt-9cefc842/" target="_blank" rel="noopener" class="krim-item rv d5">
+            <span class="krim-arrow">&rarr;</span>
+            <span class="krim-title">Boråsare häktas för våldtäkt</span>
+            <span class="krim-source">Borås Tidning</span>
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 
-  <div class="divider"></div>
+  <div class="divider-full"></div>
 
-  <!-- ── Projects ──────────────────────────────────────────────────── -->
+  <!-- ═══ PROJECTS ═════════════════════════════════════════════════ -->
   <section id="projects">
-    <div class="proj-inner">
-      <div class="label rv">Projekt</div>
-      <h2 class="sec-title rv d1">Verktyg &amp;<br><em>Ekosystem</em></h2>
+    <div class="section-padding">
+      <div class="section-inner">
+        <div class="section-label rv">Projekt</div>
+        <h2 class="section-title rv d1">Verktyg &amp;<br>ekosystem</h2>
 
-      <div class="arkivet-card glass-h rv">
-        <div class="ark-badge">Aktiv plattform</div>
-        <h3 class="ark-title">fupp — arkivet</h3>
-        <p class="ark-desc">
-          Ett ekosystem byggt kring offentlighetsprincipen: informationsportal, dokumentbibliotek, gratis juridisk rådgivning och specialiserade journalistverktyg. Designat för att demokratisera tillgången till allmänna handlingar.
-        </p>
+        <div class="project-feature rv d2">
+          <div class="proj-badge">Aktiv plattform</div>
+          <h3 class="proj-title">fupp — arkivet</h3>
+          <p class="proj-desc">
+            Ett ekosystem byggt kring offentlighetsprincipen: informationsportal, dokumentbibliotek, gratis juridisk rådgivning och specialiserade journalistverktyg. Designat för att demokratisera tillgången till allmänna handlingar.
+          </p>
 
-        <div class="tools-grid">
-          <a href="https://fupp.se" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">fupp.se</div>
-            <div class="tool-desc">Portal om offentlighetsprincipen</div>
-          </a>
-          <a href="https://handlingar.fupp.se" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">handlingar.fupp.se</div>
-            <div class="tool-desc">Dokumentbibliotek för allmänna handlingar</div>
-          </a>
-          <a href="https://fraga.fupp.se" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">fraga.fupp.se</div>
-            <div class="tool-desc">Gratis juridisk FOIA-rådgivning</div>
-          </a>
-          <a href="https://lexikon.fupp.se" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">lexikon.fupp.se</div>
-            <div class="tool-desc">Terminologilexikon för journalister</div>
-          </a>
-          <a href="https://fupp.se/verktyg/alderskalkylatorn" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">Ålderskalkylatorn</div>
-            <div class="tool-desc">Ålder från personnummer vid händelse</div>
-          </a>
-          <a href="https://fupp.se/verktyg/haktningskalkylatorn" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">Häktningskalkylatorn</div>
-            <div class="tool-desc">Juridisk tidslinje för häktning</div>
-          </a>
-          <a href="https://fupp.se/verktyg/offentlighetsregistret" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">Offentlighetsregistret</div>
-            <div class="tool-desc">Register över allmänna handlingar</div>
-          </a>
-          <a href="https://fupp.se/verktyg" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">Fler verktyg →</div>
-            <div class="tool-desc">FOIA-generator, Riksdagsbevakning m.m.</div>
-          </a>
-          <a href="https://galleri.elliotwahl.se" target="_blank" rel="noopener" class="tool">
-            <div class="tool-name">Fotoportfolio</div>
-            <div class="tool-desc">galleri.elliotwahl.se</div>
-          </a>
+          <div class="tools-grid">
+            <a href="https://fupp.se" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">fupp.se</div>
+              <div class="tool-desc">Portal om offentlighetsprincipen</div>
+            </a>
+            <a href="https://handlingar.fupp.se" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">handlingar.fupp.se</div>
+              <div class="tool-desc">Dokumentbibliotek för allmänna handlingar</div>
+            </a>
+            <a href="https://fraga.fupp.se" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">fraga.fupp.se</div>
+              <div class="tool-desc">Gratis juridisk FOIA-rådgivning</div>
+            </a>
+            <a href="https://lexikon.fupp.se" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">lexikon.fupp.se</div>
+              <div class="tool-desc">Terminologilexikon för journalister</div>
+            </a>
+            <a href="https://fupp.se/verktyg/alderskalkylatorn" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">Ålderskalkylatorn</div>
+              <div class="tool-desc">Ålder från personnummer vid händelse</div>
+            </a>
+            <a href="https://fupp.se/verktyg/haktningskalkylatorn" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">Häktningskalkylatorn</div>
+              <div class="tool-desc">Juridisk tidslinje för häktning</div>
+            </a>
+            <a href="https://fupp.se/verktyg/offentlighetsregistret" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">Offentlighetsregistret</div>
+              <div class="tool-desc">Register över allmänna handlingar</div>
+            </a>
+            <a href="https://fupp.se/verktyg" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">Fler verktyg &rarr;</div>
+              <div class="tool-desc">FOIA-generator, riksdagsbevakning m.m.</div>
+            </a>
+            <a href="https://galleri.elliotwahl.se" target="_blank" rel="noopener" class="tool-item">
+              <div class="tool-name">Fotoportfolio</div>
+              <div class="tool-desc">galleri.elliotwahl.se</div>
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
+  <div class="divider-full"></div>
 
-  <!-- ── Skills ────────────────────────────────────────────────────── -->
-  <section id="skills">
-    <div class="skills-inner">
-      <div class="label rv">Kompetenser</div>
-      <h2 class="sec-title rv d1">Vad jag<br><em>behärskar</em></h2>
-      <div class="pills">
-        <span class="pill primary rv">Undersökande journalistik</span>
-        <span class="pill primary rv d1">Kriminalrapportering</span>
-        <span class="pill primary rv d2">Offentlighetsprincipen</span>
-        <span class="pill primary rv d3">Källskydd</span>
-        <span class="pill secondary rv">FOIA Research</span>
-        <span class="pill secondary rv d1">Data Journalism</span>
-        <span class="pill secondary rv d2">Faktakoll</span>
-        <span class="pill secondary rv d3">Webbutveckling</span>
-        <span class="pill secondary rv">Krypterad kommunikation</span>
-        <span class="pill secondary rv d1">Dokumentanalys</span>
-        <span class="pill secondary rv d2">Rättsbevakning</span>
+  <!-- ═══ SKILLS ═══════════════════════════════════════════════════ -->
+  <section id="skills" class="section-white">
+    <div class="section-padding">
+      <div class="section-inner">
+        <div class="section-label rv">Kompetenser</div>
+        <h2 class="section-title rv d1">Vad jag<br>behärskar</h2>
+
+        <div class="skills-grid">
+          <span class="skill-pill primary rv">Undersökande journalistik</span>
+          <span class="skill-pill primary rv d1">Kriminalrapportering</span>
+          <span class="skill-pill primary rv d2">Offentlighetsprincipen</span>
+          <span class="skill-pill primary rv d3">Källskydd</span>
+          <span class="skill-pill secondary rv">FOIA Research</span>
+          <span class="skill-pill secondary rv d1">Data Journalism</span>
+          <span class="skill-pill secondary rv d2">Faktakoll</span>
+          <span class="skill-pill secondary rv d3">Webbutveckling</span>
+          <span class="skill-pill secondary rv d4">Krypterad kommunikation</span>
+          <span class="skill-pill secondary rv d5">Dokumentanalys</span>
+          <span class="skill-pill secondary rv d6">Rättsbevakning</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="divider"></div>
-
-  <!-- ── Contact ───────────────────────────────────────────────────── -->
+  <!-- ═══ CONTACT ══════════════════════════════════════════════════ -->
   <section id="contact">
-    <div class="contact-inner">
-      <div class="contact-card glass-h rv">
-        <div class="label" style="justify-content:center;">Kontakt</div>
-        <h2 class="contact-title">Låt oss prata<br><em>journalistik</em></h2>
-        <p class="contact-sub">Tillgänglig för uppdrag, samarbeten och tips via krypterad kanal</p>
+    <div class="section-padding">
+      <div class="section-inner">
+        <div class="contact-block rv">
+          <div class="section-label" style="justify-content:center;">Kontakt</div>
+          <h2 class="contact-title">Låt oss<br>prata</h2>
+          <p class="contact-sub">Tillgänglig för uppdrag, samarbeten och tips via krypterad kanal</p>
 
-        <div class="c-links">
-          <a href="mailto:[email protected]" class="c-link gold">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            [email protected]
-          </a>
-          <a href="https://signal.me/#eu/kj1YsqTADIEGeaxhgAJEEa2eDReJ-9NF3EyS-MOv-Fb2RtfM4ItCRq_EA_zDIrOC" target="_blank" rel="noopener" class="c-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Signal — Krypterat
-          </a>
-          <a href="https://bsky.app/profile/elliotwahl.se" target="_blank" rel="noopener" class="c-link">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 01-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg>
-            @elliotwahl.se
-          </a>
-          <a href="https://linkedin.com/in/elliotwahl" target="_blank" rel="noopener" class="c-link">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            LinkedIn
-          </a>
-          <a href="https://galleri.elliotwahl.se" target="_blank" rel="noopener" class="c-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Fotoportfolio
-          </a>
+          <div class="contact-links">
+            <a href="mailto:[email protected]" class="c-link primary-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              [email protected]
+            </a>
+            <a href="https://signal.me/#eu/kj1YsqTADIEGeaxhgAJEEa2eDReJ-9NF3EyS-MOv-Fb2RtfM4ItCRq_EA_zDIrOC" target="_blank" rel="noopener" class="c-link ghost-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Signal — Krypterat
+            </a>
+            <a href="https://bsky.app/profile/elliotwahl.se" target="_blank" rel="noopener" class="c-link ghost-link">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 01-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.204-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8z"/></svg>
+              @elliotwahl.se
+            </a>
+            <a href="https://linkedin.com/in/elliotwahl" target="_blank" rel="noopener" class="c-link ghost-link">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn
+            </a>
+            <a href="https://galleri.elliotwahl.se" target="_blank" rel="noopener" class="c-link ghost-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Fotoportfolio
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Footer ────────────────────────────────────────────────────── -->
+  <!-- ═══ FOOTER ═══════════════════════════════════════════════════ -->
   <footer>
     <span class="f-name">Elliot Wahl</span>
-    <span class="f-copy">© 2025 · Journalist &amp; Kriminalreporter</span>
+    <span class="f-copy">&copy; 2025 &middot; Journalist &amp; Kriminalreporter</span>
   </footer>
 
   <script>
-    /* ── Custom cursor ─────────────────────────────────────────── */
-    const cur = document.getElementById('cur');
-    const ring = document.getElementById('cur-ring');
-    let mx = 0, my = 0, rx = 0, ry = 0;
+    /* ── Custom cursor with mix-blend-mode ───────────────── */
+    const cursor = document.getElementById('cursor');
+    let cx = 0, cy = 0, tx = 0, ty = 0;
 
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cur.style.left = mx + 'px';
-      cur.style.top  = my + 'px';
-    });
+    document.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
 
-    (function trackRing() {
-      rx += (mx - rx) * .11;
-      ry += (my - ry) * .11;
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
-      requestAnimationFrame(trackRing);
+    (function loop() {
+      cx += (tx - cx) * .15;
+      cy += (ty - cy) * .15;
+      cursor.style.left = cx + 'px';
+      cursor.style.top = cy + 'px';
+      requestAnimationFrame(loop);
     })();
 
-    document.querySelectorAll('a,button,.inv-card,.fact,.tool,.pill,.krim-item')
+    document.querySelectorAll('a, button, .inv-card, .fact-item, .tool-item, .skill-pill, .krim-item')
       .forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('ptr'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('ptr'));
+        el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
       });
 
-    /* ── Hero entrance ─────────────────────────────────────────── */
-    window.addEventListener('DOMContentLoaded', () => {
-      const t = (el, delay, props) => setTimeout(() => Object.assign(el.style, props), delay);
-
-      t(document.querySelector('.hero-eyebrow'), 320, { opacity: '1' });
-
-      document.querySelectorAll('.hn-line').forEach((ln, i) => {
-        t(ln, 520 + i * 140, {
-          transition: 'transform 1.3s cubic-bezier(.16,1,.3,1)',
-          transform: 'translateY(0)'
-        });
-      });
-
-      t(document.querySelector('.hero-sub'), 880, { opacity: '1' });
-
-      const ctas = document.querySelector('.hero-ctas');
-      ctas.style.transform = 'translateY(16px)';
-      t(ctas, 1060, {
-        transition: 'opacity .85s ease, transform .85s cubic-bezier(.16,1,.3,1)',
-        opacity: '1', transform: 'translateY(0)'
-      });
-
-      t(document.querySelector('.scroll-hint'), 1500, { opacity: '1' });
+    /* ── Hero image zoom on load ─────────────────────────── */
+    window.addEventListener('load', () => {
+      document.querySelector('.hero-img')?.classList.add('loaded');
     });
 
-    /* ── Scroll reveal ─────────────────────────────────────────── */
+    /* ── Scroll reveal ───────────────────────────────────── */
     const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
-    }, { threshold: .1, rootMargin: '0px 0px -36px 0px' });
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('on');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
-    /* ── Parallax ghost ────────────────────────────────────────── */
-    const ghost = document.querySelector('.hero-ghost');
+    /* ── Parallax on hero image ──────────────────────────── */
+    const heroImg = document.querySelector('.hero-img');
+    const heroSection = document.getElementById('hero');
     window.addEventListener('scroll', () => {
-      if (ghost) ghost.style.transform = `translateY(${window.scrollY * .38}px)`;
+      if (!heroImg) return;
+      const rect = heroSection.getBoundingClientRect();
+      if (rect.bottom < 0) return;
+      heroImg.style.transform = `scale(${1.05 - window.scrollY * 0.00008}) translateY(${window.scrollY * 0.15}px)`;
     }, { passive: true });
 
-    /* ── Card 3-D tilt ─────────────────────────────────────────── */
+    /* ── Magnetic effect on buttons ──────────────────────── */
+    document.querySelectorAll('.btn, .c-link').forEach(btn => {
+      btn.addEventListener('mousemove', e => {
+        const r = btn.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width / 2) * .15;
+        const y = (e.clientY - r.top - r.height / 2) * .15;
+        btn.style.transform = `translate(${x}px, ${y}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)';
+        setTimeout(() => btn.style.transition = '', 500);
+      });
+    });
+
+    /* ── Card tilt ───────────────────────────────────────── */
     document.querySelectorAll('.inv-card').forEach(card => {
       card.addEventListener('mousemove', e => {
         const r = card.getBoundingClientRect();
-        const rx = ((e.clientY - r.top)  / r.height - .5) * -6;
-        const ry = ((e.clientX - r.left) / r.width  - .5) *  6;
-        card.style.transition = 'transform .08s ease, box-shadow .4s, background .35s, border-color .35s';
-        card.style.transform = `translateY(-5px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        const rx = ((e.clientY - r.top) / r.height - .5) * -4;
+        const ry = ((e.clientX - r.left) / r.width - .5) * 4;
+        card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        card.style.transition = 'transform .08s ease, background .4s';
       });
       card.addEventListener('mouseleave', () => {
-        card.style.transition = 'transform .65s cubic-bezier(.16,1,.3,1), box-shadow .4s, background .35s, border-color .35s';
         card.style.transform = '';
+        card.style.transition = 'transform .6s cubic-bezier(.16,1,.3,1), background .4s';
       });
     });
 
-    /* ── Ambient orb follows cursor (subtle) ───────────────────── */
-    const orb = document.createElement('div');
-    Object.assign(orb.style, {
-      position: 'fixed', width: '600px', height: '600px',
-      borderRadius: '50%', pointerEvents: 'none', zIndex: '0',
-      background: 'radial-gradient(circle, rgba(200,160,80,.055) 0%, transparent 70%)',
-      transform: 'translate(-50%,-50%)', transition: 'left 1.4s ease, top 1.4s ease',
-      left: '50%', top: '50%'
-    });
-    document.body.appendChild(orb);
-    document.addEventListener('mousemove', e => {
-      orb.style.left = e.clientX + 'px';
-      orb.style.top  = e.clientY + 'px';
-    });
+    /* ── Smooth nav active state ─────────────────────────── */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const navIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(l => l.style.color = '');
+          const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+          if (active) active.style.color = '#fff';
+        }
+      });
+    }, { threshold: .3 });
+    sections.forEach(s => navIO.observe(s));
+
+    /* ── Touch device: restore default cursor ────────────── */
+    if ('ontouchstart' in window) {
+      document.body.style.cursor = 'auto';
+      cursor.style.display = 'none';
+    }
   </script>
 </body>
 </html>
