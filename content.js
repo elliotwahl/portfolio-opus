@@ -14,9 +14,11 @@ const SITE = {
       "Har du ett tips eller vill du av någon annan anledning komma i kontakt med mig? Mina kontaktuppgifter finner du längst ned."
     ],
     facts: [
-      { label: "Nuvarande arbetsplats",   value: "Nyhetsbyrån Siren" },
-      { label: "Tidigare",   value: "SVT Snabbgranskning" },
-      { label: "Särskild kompetens",value: "Kriminalrapportering · Offentlighetsprincipen · Juridik" },
+      { label: "Nuvarande arbetsplats", value: "Nyhetsbyrån Siren" },
+      { label: "Tidigare",              value: "SVT Snabbgranskning" },
+      { label: "Utbildning",            value: "Journalistik · Juridik" },
+      { label: "Särskild kompetens",    value: "Kriminalrapportering · Offentlighetsprincipen · Juridik" },
+      { label: "Övrig utbildning",      value: "Grafisk design · Foto · Film", secondary: true },
     ],
   },
 
